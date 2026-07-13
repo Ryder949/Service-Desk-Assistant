@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kmart Team Assistant</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family: Arial, sans-serif;
+    background:#f5f5f5;
+    color:#333;
+}
+
+.container{
+    max-width:480px;
+    margin:0 auto;
+    min-height:100vh;
+    background:white;
+    padding:20px;
+}
+
+h1{
+    font-size:28px;
+    margin-bottom:8px;
+}
+
+h2{
+    margin-bottom:20px;
+}
+
+.subtitle{
+    color:#666;
+    margin-bottom:25px;
+}
+
+.tiles{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-bottom:20px;
+}
+
+.tile{
+    border:1px solid #ddd;
+    border-radius:12px;
+    height:100px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-weight:bold;
+    background:white;
+    cursor:pointer;
+}
+
+.tile:hover{
+    background:#f8f8f8;
+}
+
+.full-btn{
+    width:100%;
+    height:60px;
+    border:none;
+    border-radius:12px;
+    background:#222;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
+
+.input{
+    width:100%;
+    padding:14px;
+    border:1px solid #ccc;
+    border-radius:10px;
+    font-size:16px;
+}
+
+.section{
+    margin-bottom:24px;
+}
+
+.label{
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.option{
+    display:block;
+    margin-bottom:10px;
+}
+
+button.primary{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    background:#0066cc;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
+
+.back{
+    margin-bottom:20px;
+    cursor:pointer;
+    color:#0066cc;
+}
+
+.banner{
+    color:white;
+    font-weight:bold;
+    text-align:center;
+    padding:18px;
+    border-radius:12px;
+    margin-bottom:20px;
+    font-size:20px;
+}
+
+.green{
+    background:#16A34A;
+}
+
+.red{
+    background:#DC2626;
+}
+
+.amber{
+    background:#FBBF24;
+    color:black;
+}
+
+.card{
+    border:1px solid #ddd;
+    border-radius:12px;
+    padding:16px;
+    margin-bottom:16px;
+}
+
+.card-title{
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.hidden{
+    display:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div id="app"></div>
+
+</div>
+
+<script>
+
+const app = document.getElementById("app");
+
+function home() {
+app.innerHTML = `
+<h1>Kmart Team Assistant</h1>
+<p class="subtitle">What are you helping with?</p>
+
+<div class="tiles">
+<div class="tile">Faulty Product</div>
+<div class="tile" onclick="returnsFlow()">Returns</div>
+
+<div class="tile">Marketplace</div>
+<div class="tile">Target</div>
+</div>
+
+<button class="full-btn">
+Ask Policy Question
+</button>
+`;
+}
+
+function returnsFlow() {
+app.innerHTML = `
+<div class="back" onclick="home()">← Back</div>
+
+<h2>Returns</h2>
+
+<div class="section">
+<input id="product"
+class="input"
+placeholder="Enter SKU or Product Name">
+</div>
+
+<button class="primary" onclick="productFound()">
+Continue
+</button>
+`;
+}
+
+function productFound() {
+
+const product =
+document.getElementById('product').value || "Print T-Shirt";
+
+app.innerHTML = `
+
+<div class="back" onclick="returnsFlow()">← Back</div>
+
+<h2>✓ Product Found</h2>
+
+<div class="section">
+<strong>${product}</strong>
+</div>
+
+<div class="section">
+<div class="label">Do you have proof of purchase?</div>
+
+<label class="option">
+<input type="radio" name="receipt" value="yes"> Yes
+</label>
+
+<label class="option">
+<input type="radio" name="receipt" value="no"> No
+</label>
+</div>
+
+<div class="section">
+<div class="label">Reason for Return</div>
+
+<label class="option">
+<input type="radio" name="reason"
+value="change"> Change of Mind
+</label>
+
+<label class="option">
+<input type="radio" name="reason"
+value="faulty"> Faulty Product
+</label>
+
+<label class="option">
+<input type="radio" name="reason"
+value="missing"> Missing Parts
+</label>
+
+<label class="option">
+<input type="radio" name="reason"
+value="damaged"> Damaged Product
+</label>
+</div>
+
+<button class="primary" onclick="dynamicQuestions()">
+Continue
+</button>
+`;
+}
+
+function dynamicQuestions() {
+
+const receipt =
+document.querySelector('input[name="receipt"]:checked')?.value;
+
+const reason =
+document.querySelector('input[name="reason"]:checked')?.value;
+
+if(!receipt || !reason){
+alert("Complete all questions");
+return;
+}
+
+if(receipt === "no" && reason === "change"){
+declined(
+"Unfortunately, change of mind returns require proof of purchase.",
+"No proof of purchase provided."
+);
+return;
+}
+
+app.innerHTML = `
+
+<div class="back" onclick="productFound()">← Back</div>
+
+<h2>Questions</h2>
+
+<div class="section">
+<div class="label">Has the item been?</div>
+
+<label class="option">
+<input type="radio" name="condition"
+value="unused"> Unused
+</label>
+
+<label class="option">
+<input type="radio" name="condition"
+value="tried"> Tried On Only
+</label>
+
+<label class="option">
+<input type="radio" name="condition"
+value="worn"> Worn/Used
+</label>
+</div>
+
+<div class="section">
+<div class="label">
+Are the original tags attached?
+</div>
+
+<label class="option">
+<input type="radio" name="tags"
+value="yes"> Yes
+</label>
+
+<label class="option">
+<input type="radio" name="tags"
+value="no"> No
+</label>
+</div>
+
+<button class="primary" onclick="evaluate()">
+Continue
+</button>
+`;
+}
+
+function evaluate(){
+
+const condition =
+document.querySelector('input[name="condition"]:checked')?.value;
+
+const tags =
+document.querySelector('input[name="tags"]:checked')?.value;
+
+if(!condition || !tags){
+alert("Complete all questions");
+return;
+}
+
+if(condition === "worn"){
+declined(
+"Unfortunately, I am unable to process the return as the item has been worn.",
+"Item has been worn or used."
+);
+return;
+}
+
+if(tags === "yes"){
+approved();
+return;
+}
+
+app.innerHTML = `
+
+<div class="back" onclick="dynamicQuestions()">← Back</div>
+
+<h2>Additional Question</h2>
+
+<div class="section">
+<div class="label">
+Was the item sold without tags?
+</div>
+
+<label class="option">
+<input type="radio" name="sold"
+value="yes"> Yes
+</label>
+
+<label class="option">
+<input type="radio" name="sold"
+value="no"> No
+</label>
+
+<label class="option">
+<input type="radio" name="sold"
+value="unknown"> Unknown
+</label>
+</div>
+
+<button class="primary" onclick="finalDecision()">
+Continue
+</button>
+`;
+}
+
+function finalDecision(){
+
+const sold =
+document.querySelector('input[name="sold"]:checked')?.value;
+
+if(!sold){
+alert("Select an option");
+return;
+}
+
+if(sold === "yes"){
+review();
+return;
+}
+
+if(sold === "unknown"){
+review();
+return;
+}
+
+declined(
+"Unfortunately, I am unable to process that return under the returns policy.",
+"Original ticketing missing."
+);
+}
+
+function approved(){
+
+app.innerHTML = `
+<div class="banner green">
+✅ APPROVED
+</div>
+
+<div class="card">
+<div class="card-title">Action</div>
+Process Return
+</div>
+
+<div class="card">
+<div class="card-title">Customer Response</div>
+"No worries. I can process that return for you today."
+</div>
+
+<div class="card">
+<div class="card-title">Team Guidance</div>
+• Item meets Change of Mind requirements<br>
+• Refund to original payment method
+</div>
+
+<button class="primary" onclick="home()">
+New Return
+</button>
+`;
+}
+
+function declined(customer, guidance){
+
+app.innerHTML = `
+<div class="banner red">
+❌ DECLINED
+</div>
+
+<div class="card">
+<div class="card-title">Action</div>
+Do Not Process Return
+</div>
+
+<div class="card">
+<div class="card-title">Customer Response</div>
+${customer}
+</div>
+
+<div class="card">
+<div class="card-title">Team Guidance</div>
+${guidance}
+</div>
+
+<button class="primary" onclick="home()">
+New Return
+</button>
+`;
+}
+
+function review(){
+
+app.innerHTML = `
+<div class="banner amber">
+⚠ FURTHER REVIEW REQUIRED
+</div>
+
+<div class="card">
+<div class="card-title">Action</div>
+Advise Manager
+</div>
+
+<div class="card">
+<div class="card-title">Customer Response</div>
+"I'd like to review this a little further before processing the return."
+</div>
+
+<div class="card">
+<div class="card-title">Team Guidance</div>
+• Item reportedly sold without tags<br>
+• Item appears resaleable<br>
+• Scenario not explicitly outlined in policy
+</div>
+
+<button class="primary" onclick="home()">
+New Return
+</button>
+`;
+}
+
+home();
+
+</script>
+
+</body>
+</html>
